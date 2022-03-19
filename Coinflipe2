@@ -1,0 +1,107 @@
+@name Template
+@inputs EGP:wirelink User:entity
+@persist Rounds Bet
+
+Bet=10000
+
+if(first()) 
+{
+    entity():createWire(entity():isWeldedTo(), "EGP", "wirelink")
+    entity():createWire(entity():isWeldedTo(), "User", "User")
+    
+    EGP:egpClear()
+    
+    EGP:egpClear()
+    EGP:egpBox(1, vec2(256), vec2(1024))
+    EGP:egpMaterial(1, "gui/gradient_up")
+    EGP:egpAngle(1, 45)
+    EGP:egpColor(1, vec(240,69,55))
+    
+    EGP:egpBox(2, vec2(256), vec2(1024))
+    EGP:egpMaterial(2, "gui/gradient_down")
+    EGP:egpAngle(2, 45)
+    EGP:egpColor(2, vec(250,170,75))
+    
+    EGP:egpText(3, "Coinflip By Cobyn", vec2(256, 220))
+    EGP:egpAlign(3, 1, 1)
+    EGP:egpSize(3, 52)
+    EGP:egpFont(3, "Marlett")
+    EGP:egpColor(3, vec(0,0,0))
+    
+    EGP:egpText(4, "Press E to flip", vec2(256, 265))
+    EGP:egpAlign(4, 1, 1)
+    EGP:egpSize(4, 52)
+    EGP:egpFont(4, "Marlett")
+    EGP:egpColor(4, vec(0,0,0))
+        
+    EGP:egpText(5, "Bet is 10,000. Odds are 50/50.", vec2(256, 335))
+    EGP:egpAlign(5, 1, 1)
+    EGP:egpSize(5, 25)
+    EGP:egpFont(5, "Marlett")
+    EGP:egpColor(5, vec(0,0,0))
+
+    EGP:egpText(6, "Heads = x1.4", vec2(256, 355))
+    EGP:egpAlign(6, 1, 1)
+    EGP:egpSize(6, 32)
+    EGP:egpFont(6, "Roboto Mono")
+    EGP:egpColor(6, vec(0,0,0))
+    
+    EGP:egpText(7, "Tails = x0.5", vec2(256, 375))
+    EGP:egpAlign(7, 1, 1)
+    EGP:egpSize(7, 32)
+    EGP:egpFont(7, "Roboto Mono")
+    EGP:egpColor(7, vec(0,0,0)) 
+}
+
+elseif(User & ~User)
+{
+        moneyRequest(User, Bet, "Coinflip")
+    }
+    if(moneyClk("Coinflip")) {
+    CurrentUser = moneyClkPlayer()
+    EGP:egpRemove(4)
+    Rounds = 10
+    EGP:egpText(4, "Heads", vec2(256, 256))
+    EGP:egpAlign(4, 1, 1)
+    EGP:egpSize(4, 60)
+    EGP:egpFont(4, "Marlett")
+    
+    EGP:egpText(5, "Please wait to flip again!", vec2(256, 412))
+    EGP:egpAlign(5, 1, 1)
+    EGP:egpSize(5, 20)
+    EGP:egpFont(5, "Marlett")
+    timer("heads", 100)
+}
+
+if(clk("heads")) {
+    EGP:egpText(4, "Heads", vec2(256))
+    if (Rounds < 1) {
+        
+        local Chance = random(0, 1)
+        if(Chance > 0.5) {
+            EGP:egpText(4, "Heads", vec2(256))
+            moneyGive(CurrentUser, Bet*1.4)
+            timer("reset", 2000)
+        }
+        else {
+            EGP:egpText(4, "Tails", vec2(256))
+            timer("reset", 2000)
+        }
+    }
+    else {
+        Rounds = Rounds - 1
+        timer("tails", 100)
+    }
+}
+
+if(clk("tails")) {
+    EGP:egpText(4, "Tails", vec2(256))
+    Rounds = Rounds-1
+    timer("heads", 100)
+}
+
+if(clk("reset")) {
+    reset()
+}
+
+
